@@ -1,0 +1,21 @@
+{
+  "name": "legolasbo/date-extractor",
+  "description": "Extracts dates from a given string",
+  "authors": [
+    {
+      "name": "legolasbo",
+      "email": "legolasbo@2480548.no-reply.drupal.org"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require-dev": {
+    "phpunit/phpunit": "~4.8"
+  },
+  "autoload": {
+    "psr-4": {
+      "legolasbo\\DateExtractor\\": "src/",
+      "legolasbo\\DateExtractor\\tests\\": "tests/"
+    }
+  }
+}
