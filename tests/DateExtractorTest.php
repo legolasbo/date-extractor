@@ -21,19 +21,22 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
   /**
    * @test
    */
-  public function singleDateExtractedCorrectly() {
-    $this->assertResultForSingleDatePresent('31-01-2015', '31-01-2015');
-    $this->assertResultForSingleDatePresent('01-31-2015', '31-01-2015');
-    $this->assertResultForSingleDatePresent('31-1-2015', '31-01-2015');
-    $this->assertResultForSingleDatePresent('1-31-2015', '31-01-2015');
-    $this->assertResultForSingleDatePresent('2015-01-31', '31-01-2015');
-    $this->assertResultForSingleDatePresent('2015-31-01', '31-01-2015');
-    $this->assertResultForSingleDatePresent('hello 2015-31-01', '31-01-2015');
-    $this->assertResultForSingleDatePresent('hello 2015-31-01 there', '31-01-2015');
-    $this->assertResultForSingleDatePresent('31/01/2015', '31-01-2015');
-    $this->assertResultForSingleDatePresent('31 01 2015', '31-01-2015');
+  public function singleNumericDateExtractedCorrectly() {
+    $this->assertResultForSingleDatePresent('31-01-2015');
+    $this->assertResultForSingleDatePresent('01-31-2015');
+    $this->assertResultForSingleDatePresent('31-1-2015');
+    $this->assertResultForSingleDatePresent('1-31-2015');
+    $this->assertResultForSingleDatePresent('2015-01-31');
+    $this->assertResultForSingleDatePresent('2015-31-01');
+    $this->assertResultForSingleDatePresent('hello 2015-31-01');
+    $this->assertResultForSingleDatePresent('hello 2015-31-01 there');
+    $this->assertResultForSingleDatePresent('31/01/2015');
+    $this->assertResultForSingleDatePresent('31 01 2015');
   }
 
+  /**
+   * @param $text
+   */
   public function assertNoDateFound($text) {
     $extractor = new DateExtractor($text);
     $this->assertFalse($extractor->containsDate());
@@ -41,11 +44,12 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
 
   /**
    * @param $text
-   * @param $expected_date
+   * @internal param $expected_date
    */
-  public function assertResultForSingleDatePresent($text, $expected_date) {
+  public function assertResultForSingleDatePresent($text) {
     $extractor = new DateExtractor($text);
 
+    $expected_date = '31-01-2015';
     $expected = [
       'year' => 2015,
       'month' => 1,
