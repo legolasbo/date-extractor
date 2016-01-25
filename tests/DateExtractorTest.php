@@ -52,6 +52,7 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
    */
   public function assertNoDateFound($text) {
     $extractor = new DateExtractor($text);
+    $this->assertEquals(0, $extractor->numberOfDates());
     $this->assertFalse($extractor->containsDate());
   }
 
@@ -69,6 +70,7 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
       'day' => 31,
     ];
     $this->assertTrue($extractor->containsDate());
+    $this->assertEquals(1, $extractor->numberOfDates());
     $this->assertEquals($expected, $extractor->getDateAsArray());
     $this->assertEquals(new DateTime($expected_date), $extractor->getDateTimeObject());
   }

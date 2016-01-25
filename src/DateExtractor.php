@@ -15,8 +15,19 @@ class DateExtractor {
   /**
    * DateExtractor constructor.
    */
-  public function __construct($textToSearch) {
-    $this->textToSearch = $textToSearch;
+  public function __construct($text) {
+    $this->textToSearch = $this->replaceTextualMonthsWithNumbers($text);
+  }
+
+  /**
+   * @param string $text
+   * @return string
+   */
+  private function replaceTextualMonthsWithNumbers($text) {
+    foreach ($this->getMonthMap() as $month => $number) {
+      $text = str_ireplace($month, $number, $text);
+    }
+    return $text;
   }
 
   /**
@@ -24,6 +35,16 @@ class DateExtractor {
    */
   public function containsDate() {
     return !empty($this->getDateAsArray());
+  }
+
+  /**
+   * @return int
+   */
+  public function numberOfDates() {
+    if (preg_match_all($this->regex, $this->textToSearch, $matches)) {
+      return count($matches[0]);
+    }
+    return 0;
   }
 
   /**
@@ -46,26 +67,13 @@ class DateExtractor {
   public function getDateAsArray() {
     $result = [];
 
-    $textToSearch = $this->replaceTextualMonthsWithNumbers($this->textToSearch);
-
-    if (preg_match($this->regex, $textToSearch, $matches)) {
+    if (preg_match($this->regex, $this->textToSearch, $matches)) {
       $result['year'] = $matches[3];
       $result['month'] = $matches[2];
       $result['day'] = $matches[1];
     }
 
     return $this->ensureValidDate($result);
-  }
-
-  /**
-   * @param string $text
-   * @return string
-   */
-  private function replaceTextualMonthsWithNumbers($text) {
-    foreach ($this->getMonthMap() as $month => $number) {
-      $text = str_ireplace($month, $number, $text);
-    }
-    return $text;
   }
 
   /**
