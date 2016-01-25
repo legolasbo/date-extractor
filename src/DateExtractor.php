@@ -68,14 +68,8 @@ class DateExtractor {
    * @return \DateTime
    */
   public function getDateTimeObject() {
-    $result = new DateTime();
-
-    if ($date = $this->getDateAsArray()) {
-      $result->setDate($date['year'], $date['month'], $date['day']);
-      $result->setTime(0,0);
-    }
-
-    return $result;
+    $dates = $this->getDatesAsDatetimeObjects();
+    return reset($dates);
   }
 
   /**
@@ -84,6 +78,23 @@ class DateExtractor {
   public function getDateAsArray() {
     $dates = $this->getDatesAsArray();
     return array_shift($dates);
+  }
+
+
+  /**
+   * @return array
+   */
+  public function getDatesAsDatetimeObjects() {
+    $dates = [];
+
+    foreach ($this->getDatesAsArray() as $dateArray) {
+      $date = new DateTime();
+      $date->setDate($dateArray['year'], $dateArray['month'], $dateArray['day']);
+      $date->setTime(0,0);
+      $dates[] = $date;
+    }
+
+    return $dates;
   }
 
   /**

@@ -48,6 +48,29 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
   }
 
   /**
+   * @test
+   */
+  public function multipleDatesGetExtracted() {
+    $extractor = new DateExtractor('first date 31-01-2015 and second date 02-30-2014');
+    $expected = [
+      [
+        'year' => 2015,
+        'month' => 1,
+        'day' => 31,
+      ],
+      [
+        'year' => 2014,
+        'month' => 2,
+        'day' => 30,
+      ],
+    ];
+
+    $this->assertEquals(2, $extractor->numberOfDates());
+    $this->assertEquals($expected, $extractor->getDatesAsArray());
+    $this->assertEquals([new DateTime('31-01-2015'), new DateTime('30-02-2014')], $extractor->getDatesAsDatetimeObjects());
+  }
+
+  /**
    * @param $text
    */
   public function assertNoDateFound($text) {
@@ -63,7 +86,6 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
   public function assertResultForSingleDatePresent($text) {
     $extractor = new DateExtractor($text);
 
-    $expected_date = '31-01-2015';
     $expected = [
       'year' => 2015,
       'month' => 1,
@@ -73,7 +95,7 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(1, $extractor->numberOfDates());
     $this->assertEquals($expected, $extractor->getDateAsArray());
     $this->assertEquals([$expected], $extractor->getDatesAsArray());
-    $this->assertEquals(new DateTime($expected_date), $extractor->getDateTimeObject());
+    $this->assertEquals(new DateTime('31-01-2015'), $extractor->getDateTimeObject());
   }
 
 }
