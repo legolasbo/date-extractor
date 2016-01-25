@@ -42,20 +42,65 @@ class DateExtractor {
   public function getDateAsArray() {
     $result = [];
 
-    if (preg_match('(\b(\d{1,2}|\d{4}|[a-zA-Z]+)[-| |\/](\d{1,2}|[a-zA-Z]+)[-| |\/](\d{4}|\d{1,2})\b)', $this->textToSearch, $matches)) {
+    $textToSearch = $this->replaceTextualMonthsWithNumbers($this->textToSearch);
+
+    if (preg_match('(\b(\d{1,2}|\d{4})[-| |\/](\d{1,2})[-| |\/](\d{4}|\d{1,2})\b)', $textToSearch, $matches)) {
       $result['year'] = $matches[3];
       $result['month'] = $matches[2];
       $result['day'] = $matches[1];
     }
 
-    return $this->ensureValidResult($result);
+    return $this->ensureValidDate($result);
+  }
+
+  /**
+   * @param string $text
+   * @return string
+   */
+  private function replaceTextualMonthsWithNumbers($text) {
+    foreach ($this->getMonthMap() as $month => $number) {
+      $text = str_ireplace($month, $number, $text);
+    }
+    return $text;
+  }
+
+  /**
+   * @return array
+   */
+  private function getMonthMap() {
+    return [
+      'january' => 1,
+      'february' => 2,
+      'march' => 3,
+      'april' => 4,
+      'may' => 5,
+      'june' => 6,
+      'july' => 7,
+      'august' => 8,
+      'september' => 9,
+      'october' => 10,
+      'november' => 11,
+      'december' => 12,
+      'jan' => 1,
+      'feb' => 2,
+      'mar' => 3,
+      'apr' => 4,
+      'jun' => 6,
+      'jul' => 7,
+      'aug' => 8,
+      'sept' => 9,
+      'sep' => 9,
+      'oct' => 10,
+      'nov' => 11,
+      'dec' => 12,
+    ];
   }
 
   /**
    * @param array $result
    * @return array
    */
-  private function ensureValidResult(array $result) {
+  private function ensureValidDate(array $result) {
     if (empty($result)) {
       return $result;
     }

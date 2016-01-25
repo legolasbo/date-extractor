@@ -16,6 +16,8 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
     $this->assertNoDateFound('llalala31-01-2015');
     $this->assertNoDateFound('llalala31-01-2015sgsdgs');
     $this->assertNoDateFound('31-01-2015sgsdgs');
+    $this->assertNoDateFound('31 janu 2015');
+    $this->assertNoDateFound('janu 31 2015');
   }
 
   /**
@@ -32,6 +34,17 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
     $this->assertResultForSingleDatePresent('hello 2015-31-01 there');
     $this->assertResultForSingleDatePresent('31/01/2015');
     $this->assertResultForSingleDatePresent('31 01 2015');
+  }
+
+  /**
+   * @test
+   */
+  public function singleAlphanumericDateExtractedCorrectly() {
+    $this->assertResultForSingleDatePresent('31 january 2015');
+    $this->assertResultForSingleDatePresent('january 31 2015');
+    $this->assertResultForSingleDatePresent('31 jan 2015');
+    $this->assertResultForSingleDatePresent('jan 31 2015');
+    $this->assertResultForSingleDatePresent('31 January 2015');
   }
 
   /**
