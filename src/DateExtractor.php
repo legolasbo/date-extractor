@@ -34,17 +34,34 @@ class DateExtractor {
    * @return bool
    */
   public function containsDate() {
-    return !empty($this->getDateAsArray());
+    return $this->numberOfDates() > 0;
   }
 
   /**
    * @return int
    */
   public function numberOfDates() {
+    return count($this->getDatesAsArray());
+  }
+
+  /**
+   * @return array
+   */
+  public function getDatesAsArray() {
+    $dates = [];
+
     if (preg_match_all($this->regex, $this->textToSearch, $matches)) {
-      return count($matches[0]);
+      $matching_dates = $matches[0];
+      while ($matching_date = array_shift($matching_dates)) {
+        $date = [];
+        $date['year'] = array_shift($matches[3]);
+        $date['month'] = array_shift($matches[2]);
+        $date['day'] = array_shift($matches[1]);
+        $dates[] = $this->ensureValidDate($date);
+      }
     }
-    return 0;
+
+    return $dates;
   }
 
   /**
@@ -65,15 +82,8 @@ class DateExtractor {
    * @return array
    */
   public function getDateAsArray() {
-    $result = [];
-
-    if (preg_match($this->regex, $this->textToSearch, $matches)) {
-      $result['year'] = $matches[3];
-      $result['month'] = $matches[2];
-      $result['day'] = $matches[1];
-    }
-
-    return $this->ensureValidDate($result);
+    $dates = $this->getDatesAsArray();
+    return array_shift($dates);
   }
 
   /**

@@ -72,6 +72,7 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue($extractor->containsDate());
     $this->assertEquals(1, $extractor->numberOfDates());
     $this->assertEquals($expected, $extractor->getDateAsArray());
+    $this->assertEquals([$expected], $extractor->getDatesAsArray());
     $this->assertEquals(new DateTime($expected_date), $extractor->getDateTimeObject());
   }
 
