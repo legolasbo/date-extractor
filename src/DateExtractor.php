@@ -6,7 +6,11 @@ use DateTime;
 
 class DateExtractor {
 
+  /** @var string */
   private $textToSearch;
+
+  /** @var string */
+  private $regex = '(\b(\d{1,2}|\d{4})[-| |\/](\d{1,2})[-| |\/](\d{4}|\d{1,2})\b)';
 
   /**
    * DateExtractor constructor.
@@ -44,7 +48,7 @@ class DateExtractor {
 
     $textToSearch = $this->replaceTextualMonthsWithNumbers($this->textToSearch);
 
-    if (preg_match('(\b(\d{1,2}|\d{4})[-| |\/](\d{1,2})[-| |\/](\d{4}|\d{1,2})\b)', $textToSearch, $matches)) {
+    if (preg_match($this->regex, $textToSearch, $matches)) {
       $result['year'] = $matches[3];
       $result['month'] = $matches[2];
       $result['day'] = $matches[1];
