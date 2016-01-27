@@ -18,6 +18,7 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
     $this->assertNoDateFound('31-01-2015sgsdgs');
     $this->assertNoDateFound('31 janu 2015');
     $this->assertNoDateFound('janu 31 2015');
+    $this->assertNoDateFound('31 february 2015 can never exist');
   }
 
   /**
@@ -53,7 +54,7 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
    * @test
    */
   public function multipleDatesGetExtracted() {
-    $extractor = new DateExtractor('first date 31-01-2015 and second date 02-30-2014');
+    $extractor = new DateExtractor('first date 31-01-2015 and second date 02-27-2014');
     $expected = [
       [
         'year' => 2015,
@@ -63,13 +64,13 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
       [
         'year' => 2014,
         'month' => 2,
-        'day' => 30,
+        'day' => 27,
       ],
     ];
 
     $this->assertEquals(2, $extractor->numberOfDates());
     $this->assertEquals($expected, $extractor->getDatesAsArray());
-    $this->assertEquals([new DateTime('31-01-2015'), new DateTime('30-02-2014')], $extractor->getDatesAsDatetimeObjects());
+    $this->assertEquals([new DateTime('31-01-2015'), new DateTime('27-02-2014')], $extractor->getDatesAsDatetimeObjects());
   }
 
   /**
@@ -93,7 +94,6 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
     $this->assertSingleYear('2015');
     $this->assertSingleYear('Single year 2015 within text');
     $this->assertSingleYear('Single year at end of sentence 2015.');
-
   }
 
   /**

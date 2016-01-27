@@ -60,11 +60,75 @@ class DateExtractor {
         $date['year'] = array_shift($matches[3]);
         $date['month'] = array_shift($matches[2]);
         $date['day'] = array_shift($matches[1]);
-        $dates[] = $this->ensureValidDate($date);
+
+        $date = $this->ensureCorrectlyMapped($date);
+
+        if ($this->isValidDate($date)) {
+          $dates[] = $date;
+
+        }
       }
     }
 
     return $dates;
+  }
+
+
+  /**
+   * @param array $date
+   * @return array
+   */
+  private function ensureCorrectlyMapped(array $date) {
+    if (strlen($date['day']) > 2 && strlen($date['year']) <= 2) {
+      $date = $this->swapValuesOfKeys($date, 'day', 'year');
+    }
+
+    if ($date['month'] > 12) {
+      $date = $this->swapValuesOfKeys($date, 'day', 'month');
+    }
+
+    return $this->ensureDayAndMonthPrefixedWithZero($date);
+  }
+
+  /**
+   * @param array $result
+   * @param $key1
+   * @param $key2
+   * @return array
+   */
+  private function swapValuesOfKeys(array $result, $key1, $key2) {
+    $temp = $result[$key1];
+    $result[$key1] = $result[$key2];
+    $result[$key2] = $temp;
+
+    return $result;
+  }
+
+  private function ensureDayAndMonthPrefixedWithZero(array $date) {
+    foreach (['day', 'month'] as $key) {
+      $date[$key] = strlen($date[$key]) === 1 ? '0'.$date[$key] : $date[$key];
+    }
+    return $date;
+  }
+
+  /**
+   * @param array $dateArray
+   * @return bool
+   */
+  private function isValidDate(array $dateArray){
+    $dateTime = $this->dateArrayToDateTime($dateArray);
+    return $dateTime->format('d-m-Y') === "{$dateArray['day']}-{$dateArray['month']}-{$dateArray['year']}";
+  }
+
+  /**
+   * @param $dateArray
+   * @return \DateTime
+   */
+  private function dateArrayToDateTime($dateArray) {
+    $date = new DateTime();
+    $date->setDate($dateArray['year'], $dateArray['month'], $dateArray['day']);
+    $date->setTime(0,0);
+    return $date;
   }
 
   /**
@@ -91,10 +155,7 @@ class DateExtractor {
     $dates = [];
 
     foreach ($this->getDatesAsArray() as $dateArray) {
-      $date = new DateTime();
-      $date->setDate($dateArray['year'], $dateArray['month'], $dateArray['day']);
-      $date->setTime(0,0);
-      $dates[] = $date;
+      $dates[] = $this->dateArrayToDateTime($dateArray);
     }
 
     return $dates;
@@ -130,34 +191,6 @@ class DateExtractor {
       'nov' => 11,
       'dec' => 12,
     ];
-  }
-
-  /**
-   * @param array $result
-   * @return array
-   */
-  private function ensureValidDate(array $result) {
-    if (strlen($result['day']) > 2 && strlen($result['year']) <= 2) {
-      $result = $this->swapValuesOfKeys($result, 'day', 'year');
-    }
-
-    if ($result['month'] > 12) {
-      $result = $this->swapValuesOfKeys($result, 'day', 'month');
-    }
-
-    return $result;
-  }
-
-  /**
-   * @param array $result
-   * @return array
-   */
-  private function swapValuesOfKeys(array $result, $key1, $key2) {
-    $temp = $result[$key1];
-    $result[$key1] = $result[$key2];
-    $result[$key2] = $temp;
-
-    return $result;
   }
 
   public function containsPartialDate() {
