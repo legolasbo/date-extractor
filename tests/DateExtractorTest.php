@@ -28,12 +28,14 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
     $this->assertResultForSingleDatePresent('01-31-2015');
     $this->assertResultForSingleDatePresent('31-1-2015');
     $this->assertResultForSingleDatePresent('1-31-2015');
+    $this->assertResultForSingleDatePresent('31/01/2015');
+    $this->assertResultForSingleDatePresent('31/1/2015');
+    $this->assertResultForSingleDatePresent('31 01 2015');
+    $this->assertResultForSingleDatePresent('31 1 2015');
     $this->assertResultForSingleDatePresent('2015-01-31');
     $this->assertResultForSingleDatePresent('2015-31-01');
     $this->assertResultForSingleDatePresent('hello 2015-31-01');
     $this->assertResultForSingleDatePresent('hello 2015-31-01 there');
-    $this->assertResultForSingleDatePresent('31/01/2015');
-    $this->assertResultForSingleDatePresent('31 01 2015');
   }
 
   /**
@@ -71,6 +73,63 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
   }
 
   /**
+   * @test
+   */
+  public function singlePartialDateExpectedNotToBeFound() {
+    $this->assertNoPartialDate('');
+    $this->assertNoPartialDate('no partial date present');
+    $this->assertNoPartialDate('some numbers 12 present but no date');
+    $this->assertNoPartialDate('The date 15 oct 1999 is a full date and should therefor not be considered partial');
+    $this->assertNoPartialDate('some numbers with various digits 1, 22, 333, 55555');
+  }
+
+  /**
+   * @test
+   */
+  public function partialDateGetsExtracted() {
+    $this->assertSinglePartialDateWithMonth('01-2015');
+    $this->assertSinglePartialDateWithMonth('january 2015');
+    $this->assertSinglePartialDateWithMonth('Partial date january 2015 within text');
+    $this->assertSingleYear('2015');
+    $this->assertSingleYear('Single year 2015 within text');
+    $this->assertSingleYear('Single year at end of sentence 2015.');
+
+  }
+
+  /**
+   * @param $text
+   */
+  public function assertNoPartialDate($text) {
+    $extractor = new DateExtractor($text);
+    $this->assertFalse($extractor->containsPartialDate());
+  }
+
+  /**
+   * @param $text
+   */
+  public function assertSinglePartialDateWithMonth($text) {
+    $extractor = new DateExtractor($text);
+    $expected = [
+      'year' => 2015,
+      'month' => 1,
+    ];
+    $this->assertTrue($extractor->containsPartialDate());
+    $this->assertEquals($expected, $extractor->getPartialDate());
+  }
+
+  /**
+   * @param $text
+   */
+  public function assertSingleYear($text) {
+    $extractor = new DateExtractor($text);
+    $expected = [
+      'year' => 2015,
+    ];
+    $this->assertTrue($extractor->containsPartialDate());
+    $this->assertEquals($expected, $extractor->getPartialDate());
+  }
+
+  /**
    * @param $text
    */
   public function assertNoDateFound($text) {
@@ -81,7 +140,6 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
 
   /**
    * @param $text
-   * @internal param $expected_date
    */
   public function assertResultForSingleDatePresent($text) {
     $extractor = new DateExtractor($text);

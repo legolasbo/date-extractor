@@ -10,7 +10,10 @@ class DateExtractor {
   private $textToSearch;
 
   /** @var string */
-  private $regex = '(\b(\d{1,2}|\d{4})[-| |\/](\d{1,2})[-| |\/](\d{4}|\d{1,2})\b)';
+  private $regularExpressionForFullDate = '(\b(\d{1,2}|\d{4})\b[-| |\/]\b(\d{1,2})\b[-| |\/]\b(\d{4}|\d{1,2})\b)';
+
+  /** @var string */
+  private $regularExpressionForPartialDate = '(\b(\d{0,2})\b[-| |\/]?\b(\d{4})\b)';
 
   /**
    * DateExtractor constructor.
@@ -50,7 +53,7 @@ class DateExtractor {
   public function getDatesAsArray() {
     $dates = [];
 
-    if (preg_match_all($this->regex, $this->textToSearch, $matches)) {
+    if (preg_match_all($this->regularExpressionForFullDate, $this->textToSearch, $matches)) {
       $matching_dates = $matches[0];
       while ($matching_date = array_shift($matching_dates)) {
         $date = [];
@@ -159,5 +162,32 @@ class DateExtractor {
     $result[$key2] = $temp;
 
     return $result;
+  }
+
+  public function containsPartialDate() {
+    return !empty($this->getPartialDate());
+  }
+
+  /**
+   * @return array
+   */
+  public function getPartialDate() {
+    $textToSearch = $this->removeCompleteDates($this->textToSearch);
+    if (preg_match($this->regularExpressionForPartialDate, $textToSearch, $matches)) {
+      if (!empty($matches[1])) {
+        $date['month'] = $matches[1];
+      }
+      $date['year'] = $matches[2];
+      return $date;
+    }
+    return [];
+  }
+
+  /**
+   * @param string $text
+   * @return string
+   */
+  private function removeCompleteDates($text) {
+    return preg_replace($this->regularExpressionForFullDate, '', $text);
   }
 }
