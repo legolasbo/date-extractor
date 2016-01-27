@@ -137,10 +137,6 @@ class DateExtractor {
    * @return array
    */
   private function ensureValidDate(array $result) {
-    if (empty($result)) {
-      return $result;
-    }
-
     if (strlen($result['day']) > 2 && strlen($result['year']) <= 2) {
       $result = $this->swapValuesOfKeys($result, 'day', 'year');
     }
