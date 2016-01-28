@@ -194,22 +194,39 @@ class DateExtractor {
   }
 
   public function containsPartialDate() {
-    return !empty($this->getPartialDate());
+    return !empty($this->getPartialDatesAsArray());
+  }
+
+  /**
+   * @return array
+   */
+  public function getPartialDatesAsArray() {
+    $partialDates = [];
+
+    $textToSearch = $this->removeCompleteDates($this->textToSearch);
+    if (preg_match_all($this->regularExpressionForPartialDate, $textToSearch, $matches)) {
+      $matchingPartialDates = $matches[0];
+      while ($matching_date = array_shift($matchingPartialDates)) {
+        $partialDate = [];
+        $partialDate['year'] = array_shift($matches[2]);
+        $partialDate['month'] = array_shift($matches[1]);
+        if (empty($partialDate['month'])) {
+          unset($partialDate['month']);
+        }
+
+        $partialDates[] = $partialDate;
+      }
+    }
+
+    return $partialDates;
   }
 
   /**
    * @return array
    */
   public function getPartialDate() {
-    $textToSearch = $this->removeCompleteDates($this->textToSearch);
-    if (preg_match($this->regularExpressionForPartialDate, $textToSearch, $matches)) {
-      if (!empty($matches[1])) {
-        $date['month'] = $matches[1];
-      }
-      $date['year'] = $matches[2];
-      return $date;
-    }
-    return [];
+    $dates = $this->getPartialDatesAsArray();
+    return reset($dates);
   }
 
   /**

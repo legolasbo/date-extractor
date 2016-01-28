@@ -76,7 +76,7 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
   /**
    * @test
    */
-  public function singlePartialDateExpectedNotToBeFound() {
+  public function PartialDateExpectedNotToBeFound() {
     $this->assertNoPartialDate('');
     $this->assertNoPartialDate('no partial date present');
     $this->assertNoPartialDate('some numbers 12 present but no date');
@@ -94,6 +94,23 @@ class DateExtractorTest extends PHPUnit_Framework_TestCase {
     $this->assertSingleYear('2015');
     $this->assertSingleYear('Single year 2015 within text');
     $this->assertSingleYear('Single year at end of sentence 2015.');
+  }
+
+  /**
+   * @test
+   */
+  public function multiplePartialDatesGetExtracted() {
+    $extractor = new DateExtractor('Partial date with just a year: 2013 and another with a month and year: February 1999');
+    $extractor->containsPartialDate();
+    $expected = [
+      ['year' => 2013],
+      [
+        'year' => 1999,
+        'month' => 2,
+      ],
+    ];
+
+    $this->assertEquals($expected, $extractor->getPartialDatesAsArray());
   }
 
   /**
