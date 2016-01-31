@@ -106,7 +106,7 @@ class DateExtractor {
 
   private function ensureDayAndMonthPrefixedWithZero(array $date) {
     foreach (['day', 'month'] as $key) {
-      $date[$key] = strlen($date[$key]) === 1 ? '0'.$date[$key] : $date[$key];
+      $date[$key] = strlen($date[$key]) === 1 ? '0' . $date[$key] : $date[$key];
     }
     return $date;
   }
@@ -115,7 +115,7 @@ class DateExtractor {
    * @param array $dateArray
    * @return bool
    */
-  private function isValidDate(array $dateArray){
+  private function isValidDate(array $dateArray) {
     $dateTime = $this->dateArrayToDateTime($dateArray);
     return $dateTime->format('d-m-Y') === "{$dateArray['day']}-{$dateArray['month']}-{$dateArray['year']}";
   }
@@ -127,7 +127,7 @@ class DateExtractor {
   private function dateArrayToDateTime($dateArray) {
     $date = new DateTime();
     $date->setDate($dateArray['year'], $dateArray['month'], $dateArray['day']);
-    $date->setTime(0,0);
+    $date->setTime(0, 0);
     return $date;
   }
 
@@ -143,8 +143,12 @@ class DateExtractor {
    * @return array
    */
   public function getDateAsArray() {
-    $dates = $this->getDatesAsArray();
-    return array_shift($dates);
+    if ($this->containsDate()) {
+      $dates = $this->getDatesAsArray();
+      return array_shift($dates);
+    }
+
+    return [];
   }
 
 
